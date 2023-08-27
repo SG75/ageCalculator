@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- displays site properly based on user's device -->
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Frontend Mentor | Age calculator app</title>
+  </head>
+  <body>
+    <main>
+      <div class="dateInput">
+        <div>
+          <label for="day">DAY</label>
+          <input
+            id="day"
+            type="number"
+            min="1"
+            max="31"
+            required
+            placeholder="DD"
+            aria-label="Day"
+          />
+          <p id="dayError"></p>
+        </div>
+
+        <div>
+          <label for="month">MONTH</label>
+          <input
+            id="month"
+            type="number"
+            min="1"
+            max="12"
+            required
+            placeholder="MM"
+            aria-label="Month"
+          />
+          <p id="monthError"></p>
+        </div>
+        <div>
+          <label for="year">YEAR</label>
+          <input
+            id="year"
+            required
+            placeholder="YYYY"
+            type="number"
+            aria-label="Year"
+          />
+
+          <p id="yearError"></p>
+        </div>
+      </div>
+      <div class="divider">
+        <hr />
+        <div class="circle">
+          <button id="submit" type="button">
+            <img src="assets/images/icon-arrow.svg" alt="arrow icon" />
+          </button>
+        </div>
+      </div>
+      <div class="result">
+        <div><span class="dash">--</span> years</div>
+        <div><span class="dash">--</span> months</div>
+        <div><span class="dash">--</span> days</div>
+      </div>
+    </main>
+    <div class="attribution">
+      Challenge by
+      <a href="https://www.frontendmentor.io?ref=challenge" target="_blank"
+        >Frontend Mentor</a
+      >. Coded by
+      <a href="https://www.frontendmentor.io/profile/SG75" target="_blank"
+        >Gururaj Sudhindra</a
+      >.
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
