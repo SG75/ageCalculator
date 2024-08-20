@@ -72,7 +72,7 @@ Users should be able to:
 
 next version of this app will have the following featrures
 
-1. animated disaply for age,month and days (coming in v3)
+1. animated display for age,month and days (coming in v3)
 2. greeting "Happy Birthday" when the current date and month matches the user input
 3. Confetti effect when the user's birthdate matches the current date.
 
