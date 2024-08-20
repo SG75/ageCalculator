@@ -78,7 +78,7 @@ next version of this app will have the following featrures
 
 ### Useful resources
 
-- This [resource ](https://shorturl.at/kAM01) helped me to calcualte the leap year
+- This [resource ](https://www.geeksforgeeks.org/program-check-given-year-leap-year/) helped me to calculate the leap year
 - This [resource ](https://github.com/catdad/canvas-confetti) JavaScript Confetti Library was used for the confetti effect.
 
 ## Author
