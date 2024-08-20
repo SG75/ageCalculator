@@ -10,6 +10,14 @@ window.onload = function () {
   const yearsSpan = document.querySelector(".result div:nth-child(1) span");
   const monthsSpan = document.querySelector(".result div:nth-child(2) span");
   const daysSpan = document.querySelector(".result div:nth-child(3) span");
+
+  // Get the canvas and context
+  const birthdayCanvas = document.getElementById("birthdayCanvas");
+  const ctx = birthdayCanvas.getContext("2d");
+
+  birthdayCanvas.width = birthdayCanvas.clientWidth;
+  birthdayCanvas.height = birthdayCanvas.clientHeight;
+
   const res = document.querySelector(".result");
 
   function resetOutputs() {
@@ -206,15 +214,88 @@ window.onload = function () {
     <div><span class="dash">${months}</span> months</div>
     <div><span class="dash">${days}</span> ${days === 1 ? "day" : "days"}</div>
   `;
+    // Check if the day and month match the current date
+    if (birthDay == currentDay && birthMonth == currentMonth) {
+      launchConfetti();
+      animateBirthdayText();
+    }
+  }
+
+  // Function to launch confetti
+  function launchConfetti() {
+    var end = Date.now() + 15 * 1000;
+    var colors = ["#bb0000", "#ffffff"];
+
+    (function frame() {
+      confetti({
+        particleCount: 2,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: colors,
+      });
+      confetti({
+        particleCount: 2,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: colors,
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    })();
+  }
+
+  // Function to animate "Happy Birthday" text
+  function animateBirthdayText() {
+    let textAlpha = 0; // Initial opacity
+    let textSize = 0; // Initial font size
+    const maxTextSize = 100; // Maximum font size
+    const text = "Happy Birthday!";
+
+    let xPosition = -birthdayCanvas.width; // Start off-screen to the left
+    const speed = 2; // Speed at which the text moves
+
+    function drawText() {
+      ctx.clearRect(0, 0, birthdayCanvas.width, birthdayCanvas.height); // Clear canvas
+
+      ctx.font = `${textSize}px Poppins, sans-serif`;
+      ctx.fillStyle = `rgba(255, 215, 0, ${textAlpha})`;
+      ctx.textAlign = "center";
+      ctx.fillText(text, birthdayCanvas.width / 2, birthdayCanvas.height / 2);
+
+      if (textAlpha < 1) {
+        textAlpha += 0.01; // Increase opacity
+      }
+
+      if (textSize < maxTextSize) {
+        textSize += 1; // Increase font size
+      }
+
+      // Move text to the right
+      xPosition += speed;
+
+      // Loop animation until text goes off the right edge
+      if (xPosition < birthdayCanvas.width + maxTextSize) {
+        requestAnimationFrame(drawText);
+      }
+      // if (textAlpha < 1 || textSize < maxTextSize) {
+      //   requestAnimationFrame(drawText); // Continue animation
+      // }
+    }
+
+    drawText();
   }
 
   // Attach a click event to the button to log the input values
 
   button.addEventListener("click", () => {
-    checkDay(inputDay);
-    checkMonth(inputMonth);
-    checkYear(inputYear);
-    checkDateValidity(inputDay, inputMonth, inputYear);
+    // checkDay(inputDay);
+    // checkMonth(inputMonth);
+    // checkYear(inputYear);
+    // checkDateValidity(inputDay, inputMonth, inputYear);
     if (
       checkDay(inputDay) &&
       checkMonth(inputMonth) &&
@@ -222,6 +303,9 @@ window.onload = function () {
       checkDateValidity(inputDay, inputMonth, inputYear)
     ) {
       calculateAge(inputDay, inputMonth, inputYear);
+      ///
+
+      ///
     }
   });
 };
