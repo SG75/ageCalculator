@@ -42,7 +42,9 @@ Users should be able to:
 
 - See hover and focus states for all interactive elements on the page
 
-- **Bonus**: See the age numbers animate to their final number when the form is submitted
+- **Bonus**: See the age numbers animate to their final number when the form is submitted (coming in v3)
+- **Bonus**: See a confetti effect when the user’s birthdate matches the current date.(v2)
+- **Bonus**: See a "Happy Birthday" animated text when the user’s birthdate matches the current date.(v2)
 
 ### Screenshot
 
@@ -64,16 +66,20 @@ Users should be able to:
 
 - Flexbox
 
+- JavaScript for DOM manipulation and animations.
+
 ### Continued development
 
 next version of this app will have the following featrures
 
-1. animated disaply for age,month and days
+1. animated disaply for age,month and days (coming in v3)
 2. greeting "Happy Birthday" when the current date and month matches the user input
+3. Confetti effect when the user's birthdate matches the current date.
 
 ### Useful resources
 
-- this [resource ](https://shorturl.at/kAM01) helped me to calcualte the leap year
+- This [resource ](https://shorturl.at/kAM01) helped me to calcualte the leap year
+- This [resource ](https://github.com/catdad/canvas-confetti) JavaScript Confetti Library was used for the confetti effect.
 
 ## Author
 
