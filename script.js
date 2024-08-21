@@ -2,310 +2,185 @@ window.onload = function () {
   const inputDay = document.getElementById("day");
   const inputMonth = document.getElementById("month");
   const inputYear = document.getElementById("year");
-  const button = document.querySelector(".circle button");
-  const currentDate = new Date();
-  let currentDay = currentDate.getDate();
-  let currentMonth = currentDate.getMonth() + 1;
-  let currentYear = currentDate.getFullYear();
-  const yearsSpan = document.querySelector(".result div:nth-child(1) span");
-  const monthsSpan = document.querySelector(".result div:nth-child(2) span");
-  const daysSpan = document.querySelector(".result div:nth-child(3) span");
+  const button = document.querySelector("#submit");
+  const yearsSpan = document.getElementById("years");
+  const monthsSpan = document.getElementById("months");
+  const daysSpan = document.getElementById("days");
 
-  // Get the canvas and context
-  const birthdayCanvas = document.getElementById("birthdayCanvas");
-  const ctx = birthdayCanvas.getContext("2d");
+  const inputs = [inputDay, inputMonth, inputYear];
 
-  birthdayCanvas.width = birthdayCanvas.clientWidth;
-  birthdayCanvas.height = birthdayCanvas.clientHeight;
-
-  const res = document.querySelector(".result");
-
-  function resetOutputs() {
-    res.innerHTML = `
-    <div><span class="dash">--</span> years</div>
-    <div><span class="dash">--</span> months</div>
-    <div><span class="dash">--</span> days</div>
-  `;
-  }
-
-  //clear errors if any in the input fields
-  [inputDay, inputMonth, inputYear].forEach((input) => {
+  inputs.forEach((input) => {
     input.addEventListener("input", () => {
-      clearErrors(inputDay);
-      clearErrors(inputMonth);
-      clearErrors(inputYear);
+      clearErrors(input);
     });
   });
 
-  //function to check if year is an leap year
-  //reference: https://shorturl.at/kAM01
-
-  function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-  }
-
-  //set error field and make them red
-
-  function setErrors(input) {
-    input.previousElementSibling.style.color = "red";
-    input.style.border = "1px solid red";
-    input.nextElementSibling.style.color = "red";
-    input.nextElementSibling.classList.add("inputerror");
-  }
-
-  //check the day
-
-  function checkDay(day) {
-    if (day.value == "") {
-      day.nextElementSibling.innerHTML = "This field is required";
-      setErrors(day);
-      resetOutputs();
-      return false;
-    } else if (day.value <= 0 || day.value > 31) {
-      day.nextElementSibling.innerHTML = "Must be a valid day";
-      setErrors(day);
-      setErrors(inputYear);
-      setErrors(inputMonth);
-      resetOutputs();
-      return false;
-    } else if (checkDateValidity(day, inputMonth, inputYear) == false) {
-      setErrors(day);
-      setErrors(inputYear);
-      setErrors(inputMonth);
-      resetOutputs();
-      return false;
-    } else {
-      clearErrors(day);
-      return true;
+  button.addEventListener("click", () => {
+    if (validateInputs()) {
+      calculateAge(inputDay, inputMonth, inputYear);
     }
-  }
-  // check the year
+  });
 
-  function checkYear(year) {
-    if (year.value == "") {
-      year.nextElementSibling.innerHTML = "This field is required";
-      setErrors(year);
-      resetOutputs();
-      return false;
-    } else if (year.value > currentYear) {
-      year.nextElementSibling.innerHTML = "Must be in the past";
-      setErrors(year);
-      setErrors(inputDay);
-      setErrors(inputMonth);
-      resetOutputs();
-      return false;
-    } else if (year.value == currentYear && inputMonth.value > currentMonth) {
-      inputMonth.nextElementSibling.innerHTML = "Must be a valid month";
-      setErrors(year);
-      setErrors(inputDay);
-      setErrors(inputMonth);
-      resetOutputs();
-      return false;
-    } else if (
-      year.value == currentYear &&
-      inputMonth.value == currentMonth &&
-      inputDay.value > currentDay
-    ) {
-      inputDay.nextElementSibling.innerHTML = "Must be a in past";
-      setErrors(year);
-      setErrors(inputDay);
-      setErrors(inputMonth);
-      resetOutputs();
-      return false;
-    } else {
-      return true;
+  function validateInputs() {
+    let isValid = true;
+
+    inputs.forEach((input) => {
+      if (input.value.trim() === "") {
+        setError(input, "This field is required");
+        isValid = false;
+      } else {
+        clearErrors(input);
+      }
+    });
+
+    if (isValid) {
+      const day = parseInt(inputDay.value);
+      const month = parseInt(inputMonth.value);
+      const year = parseInt(inputYear.value);
+      const birthDate = new Date(`${year}-${month}-${day}`);
+      const now = new Date();
+
+      if (
+        month < 1 ||
+        month > 12 ||
+        day < 1 ||
+        day > 31 ||
+        year > now.getFullYear() ||
+        birthDate > now
+      ) {
+        setError(inputDay, "Must be a valid date");
+        setError(inputMonth, "Must be a valid date");
+        setError(inputYear, "Must be a valid date");
+        isValid = false;
+      } else {
+        clearErrors(inputDay);
+        clearErrors(inputMonth);
+        clearErrors(inputYear);
+      }
     }
+
+    return isValid;
   }
 
-  // check the month
-
-  function checkMonth(month) {
-    if (month.value == "") {
-      month.nextElementSibling.innerHTML = "This field is required";
-      setErrors(month);
-      resetOutputs();
-      return false;
-    } else if (month.value <= 0 || month.value > 12) {
-      month.nextElementSibling.innerHTML = "Must be a valid month";
-      setErrors(month);
-      setErrors(inputDay);
-      setErrors(inputYear);
-      resetOutputs();
-      return false;
-    } else if (checkDateValidity(inputDay, month, inputYear) == false) {
-      setErrors(month);
-      setErrors(inputYear);
-      setErrors(inputMonth);
-      resetOutputs();
-      return false;
-    } else {
-      clearErrors(month);
-      return true;
-    }
+  function setError(input, message) {
+    const parent = input.parentElement;
+    const error = parent.querySelector("p");
+    input.classList.add("error");
+    error.innerText = message;
   }
-
-  //check month for number of days in the months
-
-  function checkDateValidity(day, month, year) {
-    const isLeap = isLeapYear(year.value);
-    const daysInMonth = [
-      31,
-      isLeap ? 29 : 28,
-      31,
-      30,
-      31,
-      30,
-      31,
-      31,
-      30,
-      31,
-      30,
-      31,
-    ];
-    if (day.value > daysInMonth[month.value - 1]) {
-      day.nextElementSibling.innerHTML = "Must be a valid date";
-      setErrors(day);
-      setErrors(month);
-      setErrors(year);
-      resetOutputs();
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  //clear the errors in the input fields
 
   function clearErrors(input) {
-    const res = document.querySelector(".result");
-
-    input.previousElementSibling.style.color = "";
-    input.nextElementSibling.innerHTML = "";
-    input.nextElementSibling.classList.remove("inputerror");
-    input.style.border = "";
+    const parent = input.parentElement;
+    const error = parent.querySelector("p");
+    input.classList.remove("error");
+    error.innerText = "";
     resetOutputs();
   }
 
+  function resetOutputs() {
+    yearsSpan.innerText = "--";
+    monthsSpan.innerText = "--";
+    daysSpan.innerText = "--";
+  }
+
+  function animateValue(spanElement, start, end, duration) {
+    spanElement.classList.add("animate");
+    const range = end - start;
+    const startTime = performance.now();
+
+    function animate(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const value = Math.floor(start + range * progress);
+      spanElement.innerText = value;
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        spanElement.classList.remove("animate");
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
   function calculateAge(day, month, year) {
-    const birthDay = day.value;
-    const birthMonth = month.value;
-    const birthYear = year.value;
+    const birthDate = new Date(`${year.value}-${month.value}-${day.value}`);
+    const now = new Date();
 
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // Months are 0-indexed
-    const currentDay = currentDate.getDate();
+    let years = now.getFullYear() - birthDate.getFullYear();
+    let months = now.getMonth() - birthDate.getMonth();
+    let days = now.getDate() - birthDate.getDate();
 
-    let years = currentYear - birthYear;
-    let months = currentMonth - birthMonth;
-    let days = currentDay - birthDay;
-
-    // Adjust for negative months or days
     if (days < 0) {
-      months -= 1;
-      days += new Date(birthYear, birthMonth - 1, 0).getDate();
+      months--;
+      days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
     }
     if (months < 0) {
-      years -= 1;
+      years--;
       months += 12;
     }
 
-    res.innerHTML = `
-    <div><span class="dash">${years}</span> years</div>
-    <div><span class="dash">${months}</span> months</div>
-    <div><span class="dash">${days}</span> ${days === 1 ? "day" : "days"}</div>
-  `;
-    // Check if the day and month match the current date
-    if (birthDay == currentDay && birthMonth == currentMonth) {
+    animateValue(yearsSpan, 0, years, 2000);
+    animateValue(monthsSpan, 0, months, 2000);
+    animateValue(daysSpan, 0, days, 2000);
+
+    if (
+      birthDate.getDate() === now.getDate() &&
+      birthDate.getMonth() === now.getMonth()
+    ) {
       launchConfetti();
       animateBirthdayText();
     }
   }
 
-  // Function to launch confetti
   function launchConfetti() {
-    var end = Date.now() + 15 * 1000;
-    var colors = ["#bb0000", "#ffffff"];
+    const duration = 5000;
+    const end = Date.now() + duration;
 
     (function frame() {
       confetti({
-        particleCount: 2,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: colors,
+        particleCount: 30,
+        startVelocity: 30,
+        spread: 360,
+        ticks: 60,
+        origin: {
+          x: Math.random(),
+          y: Math.random() - 0.2,
+        },
       });
-      confetti({
-        particleCount: 2,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: colors,
-      });
-
       if (Date.now() < end) {
         requestAnimationFrame(frame);
       }
     })();
   }
 
-  // Function to animate "Happy Birthday" text
   function animateBirthdayText() {
-    let textAlpha = 0; // Initial opacity
-    let textSize = 0; // Initial font size
-    const maxTextSize = 100; // Maximum font size
-    const text = "Happy Birthday!";
+    const birthdayMessage = document.createElement("div");
+    birthdayMessage.innerText = "🎉 Happy Birthday! 🎉";
+    birthdayMessage.style.position = "fixed";
+    birthdayMessage.style.top = "50%";
+    birthdayMessage.style.left = "50%";
+    birthdayMessage.style.transform = "translate(-50%, -50%)";
+    birthdayMessage.style.fontSize = "3rem";
+    birthdayMessage.style.color = "#ff69b4";
+    birthdayMessage.style.background = "rgba(0, 0, 0, 0.8)";
+    birthdayMessage.style.padding = "20px 40px";
+    birthdayMessage.style.borderRadius = "10px";
+    birthdayMessage.style.zIndex = "1000";
+    birthdayMessage.style.opacity = "0";
+    birthdayMessage.style.transition = "opacity 1s ease-in-out";
 
-    let xPosition = -birthdayCanvas.width; // Start off-screen to the left
-    const speed = 2; // Speed at which the text moves
+    document.body.appendChild(birthdayMessage);
 
-    function drawText() {
-      ctx.clearRect(0, 0, birthdayCanvas.width, birthdayCanvas.height); // Clear canvas
+    setTimeout(() => {
+      birthdayMessage.style.opacity = "1";
+    }, 100);
 
-      ctx.font = `${textSize}px Poppins, sans-serif`;
-      ctx.fillStyle = `rgba(255, 215, 0, ${textAlpha})`;
-      ctx.textAlign = "center";
-      ctx.fillText(text, birthdayCanvas.width / 2, birthdayCanvas.height / 2);
-
-      if (textAlpha < 1) {
-        textAlpha += 0.01; // Increase opacity
-      }
-
-      if (textSize < maxTextSize) {
-        textSize += 1; // Increase font size
-      }
-
-      // Move text to the right
-      xPosition += speed;
-
-      // Loop animation until text goes off the right edge
-      if (xPosition < birthdayCanvas.width + maxTextSize) {
-        requestAnimationFrame(drawText);
-      }
-      // if (textAlpha < 1 || textSize < maxTextSize) {
-      //   requestAnimationFrame(drawText); // Continue animation
-      // }
-    }
-
-    drawText();
+    setTimeout(() => {
+      birthdayMessage.style.opacity = "0";
+      setTimeout(() => {
+        document.body.removeChild(birthdayMessage);
+      }, 1000);
+    }, 4000);
   }
-
-  // Attach a click event to the button to log the input values
-
-  button.addEventListener("click", () => {
-    // checkDay(inputDay);
-    // checkMonth(inputMonth);
-    // checkYear(inputYear);
-    // checkDateValidity(inputDay, inputMonth, inputYear);
-    if (
-      checkDay(inputDay) &&
-      checkMonth(inputMonth) &&
-      checkYear(inputYear) &&
-      checkDateValidity(inputDay, inputMonth, inputYear)
-    ) {
-      calculateAge(inputDay, inputMonth, inputYear);
-      ///
-
-      ///
-    }
-  });
 };
