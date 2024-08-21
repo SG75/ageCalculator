@@ -56,8 +56,6 @@ Users should be able to:
 
 - Live Site URL: [Live Site](https://age-calculator-ashy-phi.vercel.app/)
 
-## My process
-
 ### Built with
 
 - Semantic HTML5 markup
@@ -68,11 +66,9 @@ Users should be able to:
 
 - JavaScript for DOM manipulation and animations.
 
-### Continued development
+### New in version 2 and 3
 
-next version of this app will have the following featrures
-
-1. animated display for age,month and days (coming in v3)
+1. animated display for age,month and days
 2. greeting "Happy Birthday" when the current date and month matches the user input
 3. Confetti effect when the user's birthdate matches the current date.
 
